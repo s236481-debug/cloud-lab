@@ -10,6 +10,8 @@ function App() {
     email: ""
   });
 
+  const [editingId, setEditingId] = useState(null);
+
   // Lấy danh sách sinh viên
   useEffect(() => {
     loadStudents();
@@ -39,25 +41,81 @@ function App() {
     try {
       await axios.post("/api/students", form);
 
-      // Xóa dữ liệu trong ô nhập
       setForm({
         studentId: "",
         name: "",
         email: ""
       });
 
-      // Tải lại danh sách
       loadStudents();
     } catch (error) {
       console.error("Lỗi:", error);
     }
   };
 
+  // Chọn sinh viên để sửa
+  const handleEdit = (student) => {
+    setEditingId(student._id);
+
+    setForm({
+      studentId: student.studentId,
+      name: student.name,
+      email: student.email
+    });
+  };
+
+  // Cập nhật sinh viên
+  const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+      await axios.put(`/api/students/${editingId}`, form);
+
+      setEditingId(null);
+
+      setForm({
+        studentId: "",
+        name: "",
+        email: ""
+      });
+
+      loadStudents();
+    } catch (error) {
+      console.error("Lỗi:", error);
+    }
+  };
+
+  // Xóa sinh viên
+  const handleDelete = async (id) => {
+    if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) {
+      return;
+    }
+
+    try {
+      await axios.delete(`/api/students/${id}`);
+
+      loadStudents();
+    } catch (error) {
+      console.error("Lỗi:", error);
+    }
+  };
+
+  // Hủy sửa
+  const handleCancel = () => {
+    setEditingId(null);
+
+    setForm({
+      studentId: "",
+      name: "",
+      email: ""
+    });
+  };
+
   return (
     <div>
       <h1>Quản lý sinh viên</h1>
 
-      <h2>Thêm sinh viên</h2>
+      <h2>{editingId ? "Cập nhật sinh viên" : "Thêm sinh viên"}</h2>
 
       <input
         name="studentId"
@@ -80,9 +138,21 @@ function App() {
         onChange={handleChange}
       />
 
-      <button onClick={handleSubmit}>
-        Thêm sinh viên
-      </button>
+      {editingId ? (
+        <>
+          <button onClick={handleUpdate}>
+            Cập nhật sinh viên
+          </button>
+
+          <button onClick={handleCancel}>
+            Hủy
+          </button>
+        </>
+      ) : (
+        <button onClick={handleSubmit}>
+          Thêm sinh viên
+        </button>
+      )}
 
       <h2>Danh sách sinh viên</h2>
 
@@ -91,6 +161,15 @@ function App() {
           <p>Mã SV: {student.studentId}</p>
           <p>Họ tên: {student.name}</p>
           <p>Email: {student.email}</p>
+
+          <button onClick={() => handleEdit(student)}>
+            Sửa
+          </button>
+
+          <button onClick={() => handleDelete(student._id)}>
+            Xóa
+          </button>
+
           <hr />
         </div>
       ))}

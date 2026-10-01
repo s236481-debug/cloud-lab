@@ -35,7 +35,7 @@ function App() {
   };
 
   // Thêm sinh viên
-  const handleSubmit = async (e) => {
+  const handleAdd = async (e) => {
     e.preventDefault();
 
     try {
@@ -49,7 +49,7 @@ function App() {
 
       loadStudents();
     } catch (error) {
-      console.error("Lỗi:", error);
+      console.error("Lỗi thêm sinh viên:", error);
     }
   };
 
@@ -81,22 +81,18 @@ function App() {
 
       loadStudents();
     } catch (error) {
-      console.error("Lỗi:", error);
+      console.error("Lỗi cập nhật sinh viên:", error);
     }
   };
 
   // Xóa sinh viên
   const handleDelete = async (id) => {
-    if (!window.confirm("Bạn có chắc muốn xóa sinh viên này không?")) {
-      return;
-    }
-
     try {
       await axios.delete(`/api/students/${id}`);
 
       loadStudents();
     } catch (error) {
-      console.error("Lỗi:", error);
+      console.error("Lỗi xóa sinh viên:", error);
     }
   };
 
@@ -112,52 +108,61 @@ function App() {
   };
 
   return (
-    <div>
-      <h1>Quản lý sinh viên</h1>
+    <div style={{ textAlign: "center" }}>
+      {/* Đổi tiêu đề để đánh dấu Version 2.0 */}
+      <h1>Quản lý sinh viên - Version 2.0</h1>
 
-      <h2>{editingId ? "Cập nhật sinh viên" : "Thêm sinh viên"}</h2>
+      <h2>
+        {editingId ? "Sửa sinh viên" : "Thêm sinh viên"}
+      </h2>
 
-      <input
-        name="studentId"
-        placeholder="Mã sinh viên"
-        value={form.studentId}
-        onChange={handleChange}
-      />
+      <form onSubmit={editingId ? handleUpdate : handleAdd}>
+        <input
+          type="text"
+          name="studentId"
+          placeholder="Mã sinh viên"
+          value={form.studentId}
+          onChange={handleChange}
+        />
 
-      <input
-        name="name"
-        placeholder="Họ tên"
-        value={form.name}
-        onChange={handleChange}
-      />
+        <input
+          type="text"
+          name="name"
+          placeholder="Họ tên"
+          value={form.name}
+          onChange={handleChange}
+        />
 
-      <input
-        name="email"
-        placeholder="Email"
-        value={form.email}
-        onChange={handleChange}
-      />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={form.email}
+          onChange={handleChange}
+        />
 
-      {editingId ? (
-        <>
-          <button onClick={handleUpdate}>
-            Cập nhật sinh viên
-          </button>
-
-          <button onClick={handleCancel}>
-            Hủy
-          </button>
-        </>
-      ) : (
-        <button onClick={handleSubmit}>
-          Thêm sinh viên
-        </button>
-      )}
+        {editingId ? (
+          <>
+            <button type="submit">Cập nhật</button>
+            <button type="button" onClick={handleCancel}>
+              Hủy
+            </button>
+          </>
+        ) : (
+          <button type="submit">Thêm sinh viên</button>
+        )}
+      </form>
 
       <h2>Danh sách sinh viên</h2>
 
       {students.map((student) => (
-        <div key={student._id}>
+        <div
+          key={student._id}
+          style={{
+            borderBottom: "1px solid white",
+            padding: "15px"
+          }}
+        >
           <p>Mã SV: {student.studentId}</p>
           <p>Họ tên: {student.name}</p>
           <p>Email: {student.email}</p>
@@ -169,8 +174,6 @@ function App() {
           <button onClick={() => handleDelete(student._id)}>
             Xóa
           </button>
-
-          <hr />
         </div>
       ))}
     </div>

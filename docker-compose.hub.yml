@@ -10,7 +10,7 @@ services:
       - mern-network
 
   frontend:
-    image: nhutkhang/mern-frontend:1.0
+    image: nhutkhang/mern-frontend:2.0
     container_name: mern-frontend-hub
     ports:
       - "8080:80"

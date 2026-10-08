@@ -1,8 +1,8 @@
 # Cloud Computing Laboratory
 
-Student Name:
-Student ID:
-Class:
+Student Name:  Nguyễn Nhựt Khang 
+Student ID: 236481  
+Class: DH23TIN08
 
 Cloud Lab - GitHub Practice
 
